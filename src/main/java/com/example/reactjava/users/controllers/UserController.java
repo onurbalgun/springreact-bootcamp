@@ -1,5 +1,7 @@
 package com.example.reactjava.users.controllers;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
 import com.example.reactjava.users.model.User;
 import com.example.reactjava.users.repositories.IUserRepository;
 import com.example.reactjava.utils.response.R;
@@ -10,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 
 
@@ -36,6 +39,29 @@ public class UserController {
 
 
         return new R<User>().success();
+    }
+    @Operation(summary = "Login")
+    @PostMapping("/login")
+    public String loginUser(@RequestBody User user)
+    {
+        User user1=null;
+        String access_token = null;
+        try {
+           user1 = findUserByEmail(user.getEmail()).getData();
+           if (user.getPassword().equals(user1.getPassword()))
+           {
+               Algorithm algorithm =Algorithm.HMAC256("token".getBytes());
+                access_token = JWT.create().withSubject(user1.getEmail())
+                        .withSubject(user1.getFirstName())
+                       .withExpiresAt(new Date(System.currentTimeMillis() +10*60*1000))
+                       .sign(algorithm);
+           }
+        }catch (Exception e){
+            logger.error("Create a new user fails:" +e.getMessage());
+        }
+
+        
+        return access_token;
     }
 
     @GetMapping("")
