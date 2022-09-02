@@ -4,6 +4,7 @@ package com.example.reactjava.books.controllers;
 import com.example.reactjava.books.model.Books;
 import com.example.reactjava.books.repositories.IBooksRepository;
 import com.example.reactjava.users.controllers.UserController;
+import com.example.reactjava.users.model.User;
 import com.example.reactjava.utils.response.R;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/books")
@@ -69,6 +71,23 @@ public class BooksController {
 
         return new R<Books>().success();
     }
+    @Operation(summary = "Create  a new  Book")
+    @PostMapping
+    public R<Books> addBook(@RequestBody Books book)
+    {
+        UUID uuid = UUID.randomUUID();
+        book.setId(uuid.toString());
+        try {
+            booksRepository.save(book);
+        }catch (Exception e){
+            logger.error(e.getMessage());
+        }
+
+
+        return new R<Books>().success();
+    }
+
+
     @DeleteMapping("/{id}")
     @ResponseBody
     public R<Books> deleteBook(@PathVariable String id)

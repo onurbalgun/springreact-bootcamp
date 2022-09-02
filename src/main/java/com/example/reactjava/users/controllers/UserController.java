@@ -52,7 +52,6 @@ public class UserController {
            {
                Algorithm algorithm =Algorithm.HMAC256("token".getBytes());
                 access_token = JWT.create().withSubject(user1.getEmail())
-                        .withSubject(user1.getFirstName())
                        .withExpiresAt(new Date(System.currentTimeMillis() +10*60*1000))
                        .sign(algorithm);
            }
